@@ -43,7 +43,12 @@ fn convert_images(path: &Path, output_dir: &Option<String>) -> Result<(), String
 
 fn is_supported_image(path: &Path) -> bool {
     match fs::read(path) {
-        Ok(data) => image::guess_format(&data).is_ok(),
+        Ok(data) => {
+            if path.extension().unwrap_or_default() == "webp" {
+                return false;
+            }
+            image::guess_format(&data).is_ok()
+        },
         Err(_) => false,
     }
 }
