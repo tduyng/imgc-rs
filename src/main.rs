@@ -1,8 +1,11 @@
 use clap::Parser;
 use image::{io::Reader, DynamicImage};
-use std::{fs, path::{Path, PathBuf}};
-use webp::{self, Encoder, WebPMemory};
 use rayon::prelude::*;
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
+use webp::{self, Encoder, WebPMemory};
 
 #[derive(Parser, Debug)]
 struct CliArgs {
@@ -19,15 +22,17 @@ fn main() {
     let output_dir = args.output;
 
     let path = Path::new(&dir);
-    if let Err(e) = convert_images(path, &output_dir){
+    if let Err(e) = convert_images(path, &output_dir) {
         eprint!("Error {}", e)
     }
 }
 
 fn convert_images(path: &Path, output_dir: &Option<String>) -> Result<(), String> {
     if path.is_dir() {
-        let entries: Vec<PathBuf> = fs::read_dir(path).map_err(|e| format!("Read directory failed: {e}"))?
-        .filter_map(|entry| entry.ok().map(|e| e.path())).collect();
+        let entries: Vec<PathBuf> = fs::read_dir(path)
+            .map_err(|e| format!("Read directory failed: {e}"))?
+            .filter_map(|entry| entry.ok().map(|e| e.path()))
+            .collect();
 
         entries.par_iter().try_for_each(|path| {
             if path.is_dir() {
@@ -49,7 +54,7 @@ fn is_supported_image(path: &Path) -> bool {
                 return false;
             }
             image::guess_format(&data).is_ok()
-        },
+        }
         Err(_) => false,
     }
 }
@@ -79,6 +84,8 @@ fn convert_to_webp(input_path: &Path, output_dir: &Option<String>) -> Result<(),
 
     fs::write(output_path.clone(), webp_data.to_vec())
         .map_err(|e| format!("Failed to write WebP file: {}", e))?;
+
+    println!("Generated: {}", input_path.display());
 
     Ok(())
 }

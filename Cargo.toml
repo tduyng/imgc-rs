@@ -11,3 +11,12 @@ image = "0.25.1"
 log = "0.4.21"
 rayon = "1.10.0"
 webp = "0.3.0"
+
+
+[[bin]]
+name = "towebp"
+path = "src/main.rs"
+
+[[bin]]
+name = "cleanup"
+path = "src/bin/cleanup.rs"
