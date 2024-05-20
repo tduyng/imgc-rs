@@ -1,10 +1,10 @@
-use image::{io::Reader, DynamicImage};
+use image::io::Reader;
 use rayon::prelude::*;
 use std::{
     fs,
     path::{Path, PathBuf},
 };
-use webp::{self, Encoder, WebPMemory};
+use crate::webp::to_webp;
 
 pub fn convert_images(path: &Path, output_dir: &Option<String>) -> Result<(), String> {
     if path.is_dir() {
@@ -38,13 +38,6 @@ fn is_supported_image(path: &Path) -> bool {
     }
 }
 
-fn to_webp(image: &DynamicImage) -> Result<WebPMemory, String> {
-    let encoder = Encoder::from_image(image)
-        .map_err(|e| format!("Failed to create a webp encoder: {}", e))?;
-    let webp_data = encoder.encode(100.0);
-    Ok(webp_data)
-}
-
 fn convert_to_webp(input_path: &Path, output_dir: &Option<String>) -> Result<(), String> {
     let image_render =
         Reader::open(input_path).map_err(|e| format!("Failed to open image: {}", e))?;
@@ -61,7 +54,7 @@ fn convert_to_webp(input_path: &Path, output_dir: &Option<String>) -> Result<(),
         input_path.with_extension("webp")
     };
 
-    fs::write(output_path.clone(), webp_data.to_vec())
+    fs::write(output_path.clone(), webp_data)
         .map_err(|e| format!("Failed to write WebP file: {}", e))?;
 
     println!("Generated: {}", output_path.display());

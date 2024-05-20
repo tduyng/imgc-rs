@@ -1,5 +1,6 @@
 mod cli;
 mod converter;
+mod webp;
 
 use clap::Parser;
 use cli::CliArgs;
