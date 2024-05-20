@@ -6,12 +6,9 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
-env_logger = "0.11.3"
 image = "0.25.1"
-log = "0.4.21"
 rayon = "1.10.0"
 webp = "0.3.0"
-
 
 [[bin]]
 name = "towebp"

@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-fn main(){
+fn main() {
     let target_dir = "examples";
 
     if let Err(e) = remove_webp_files(Path::new(target_dir)) {
