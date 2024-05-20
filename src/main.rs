@@ -1,7 +1,8 @@
 use clap::Parser;
 use image::{io::Reader, DynamicImage};
-use std::{fs, path::Path};
+use std::{fs, path::{Path, PathBuf}};
 use webp::{self, Encoder, WebPMemory};
+use rayon::prelude::*;
 
 #[derive(Parser, Debug)]
 struct CliArgs {
@@ -18,25 +19,25 @@ fn main() {
     let output_dir = args.output;
 
     let path = Path::new(&dir);
-    match convert_images(path, &output_dir) {
-        Ok(_) => println!("Print images succesfully"),
-        Err(e) => eprint!("Error {}", e),
+    if let Err(e) = convert_images(path, &output_dir){
+        eprint!("Error {}", e)
     }
 }
 
 fn convert_images(path: &Path, output_dir: &Option<String>) -> Result<(), String> {
     if path.is_dir() {
-        let entries = fs::read_dir(path).map_err(|e| format!("Read directory failed: {e}"))?;
+        let entries: Vec<PathBuf> = fs::read_dir(path).map_err(|e| format!("Read directory failed: {e}"))?
+        .filter_map(|entry| entry.ok().map(|e| e.path())).collect();
 
-        for entry in entries {
-            let entry = entry.map_err(|e| format!("Failed to load entry: {}", e))?;
-            let path = entry.path();
+        entries.par_iter().try_for_each(|path| {
             if path.is_dir() {
-                convert_images(&path, output_dir)?;
-            } else if is_supported_image(&path) {
-                convert_to_webp(&path, output_dir)?;
-            };
-        }
+                convert_images(path, output_dir)
+            } else if is_supported_image(path) {
+                convert_to_webp(path, output_dir)
+            } else {
+                Ok(())
+            }
+        })?;
     }
     Ok(())
 }
@@ -65,7 +66,7 @@ fn convert_to_webp(input_path: &Path, output_dir: &Option<String>) -> Result<(),
         Reader::open(input_path).map_err(|e| format!("Failed to open image: {}", e))?;
     let image = image_render
         .decode()
-        .map_err(|e| format!("Failed to decode image: {}", e))?;
+        .map_err(|e| format!("Failed to decode image: {}\n", e))?;
     let webp_data = to_webp(&image)?;
 
     let output_path = if let Some(output_dir) = output_dir {
