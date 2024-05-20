@@ -421,6 +421,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "imgconv"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "image",
+ "rayon",
+]
+
+[[package]]
 name = "imgref"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -991,15 +1000,6 @@ dependencies = [
  "serde_spanned",
  "toml_datetime",
  "winnow",
-]
-
-[[package]]
-name = "towebp"
-version = "0.1.0"
-dependencies = [
- "clap",
- "image",
- "rayon",
 ]
 
 [[package]]
