@@ -1,5 +1,5 @@
-# Image Converter: imgconv
-Imgconv is a Rust-based command-line application designed to convert various image formats into other format using the [image](https://github.com/image-rs/image) crate.
+# Image Converter: imgc
+Imgc is a Rust-based command-line application designed to convert various image formats into other format using the [image](https://github.com/image-rs/image) crate.
 Now it only supports conversion to WebP format.
 
 It aims to provide a simple and efficient way to batch process image files for better performance and reduced storage space.
@@ -19,8 +19,8 @@ As the package is not yet published on crates.io, for using or testing, you need
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/tduyng/imgconv.git
-cd imgconv
+git clone https://github.com/tduyng/imgc.git
+cd imgc
 ```
 
 2. Build the project:
@@ -81,6 +81,6 @@ The command will convert all png, jpeg, and other supported images to webp, plac
 
 ## License
 
-[MIT License](./LICENCE_MIT) and [Apache License](./LICENSE_APACHE)
+[MIT License](./LICENCE_MIT) or [Apache License](./LICENSE_APACHE)
 
 

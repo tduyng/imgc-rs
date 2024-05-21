@@ -6,6 +6,10 @@ use cli::CliArgs;
 use converter::convert_images;
 use std::path::Path;
 
+/// Entry point of the `imgc` application.
+///
+/// Parses command-line arguments and initiates the image conversion process.
+/// If an error occurs during conversion, it is printed to the standard error output.
 fn main() {
     let args = CliArgs::parse();
     let dir = args.dir;

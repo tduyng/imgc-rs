@@ -427,8 +427,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "imgconv"
-version = "0.1.0"
+name = "imgc"
+version = "0.0.1"
 dependencies = [
  "clap",
  "image",

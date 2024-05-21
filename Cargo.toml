@@ -1,8 +1,17 @@
 [package]
-name = "imgconv"
-version = "0.1.0"
+name = "imgc"
+version = "0.0.1"
 edition = "2021"
-default-run = "imgconv"
+authors = ["Duy NG <work@tduyng.dev>"]
+description = "A CLI for converting images to the WebP format writtent in Rust"
+license = "MIT/Apache-2.0"
+homepage = "https://github.com/tduyng/imgc-rs"
+repository = "https://github.com/tduyng/imgc-rs"
+keywords = ["CLI","image", "conversion", "webp"]
+categories = ["command-line-utilities", "multimedia::images", "multimedia::encoding"]
+readme = "README.md"
+include = ["README.md", "LICENSE_MIT", "LICENSE_APACHE", "Cargo.toml", "/src/*.rs"]
+default-run = "imgc"
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
@@ -11,9 +20,26 @@ rayon = "1.10.0"
 webp = "0.3.0"
 
 [[bin]]
-name = "imgconv"
+name = "imgc"
 path = "src/main.rs"
 
 [[bin]]
 name = "cleanup"
 path = "src/bin/cleanup.rs"
+
+[profile.dev]
+opt-level = 1
+debug = 1
+
+[profile.release]
+opt-level = 3
+panic = "abort"
+debug = false
+lto = true
+strip = true
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[badges]
+maintenance = { status = "actively-developed" }
