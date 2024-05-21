@@ -1,10 +1,10 @@
-use image::io::Reader;
+use image::{io::Reader, DynamicImage};
 use rayon::prelude::*;
+use webp::{Encoder, WebPMemory};
 use std::{
     fs,
     path::{Path, PathBuf},
 };
-use crate::webp::to_webp;
 
 pub fn convert_images(path: &Path, output_dir: &Option<String>) -> Result<(), String> {
     if path.is_dir() {
@@ -54,10 +54,17 @@ fn convert_to_webp(input_path: &Path, output_dir: &Option<String>) -> Result<(),
         input_path.with_extension("webp")
     };
 
-    fs::write(output_path.clone(), webp_data)
+    fs::write(output_path.clone(), &webp_data.to_vec())
         .map_err(|e| format!("Failed to write WebP file: {}", e))?;
 
     println!("Generated: {}", output_path.display());
 
     Ok(())
+}
+
+fn to_webp(image: &DynamicImage) -> Result<WebPMemory, String> {
+       let encoder = Encoder::from_image(image)
+           .map_err(|e| format!("Failed to create a webp encoder: {}", e))?;
+    let webp_data = encoder.encode(100.0);
+       Ok(webp_data)
 }
