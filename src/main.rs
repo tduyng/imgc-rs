@@ -1,22 +1,25 @@
-mod cli;
-mod converter;
-
 use clap::Parser;
-use cli::CliArgs;
-use converter::convert_images;
+use imgc::{
+    cli::{CliArgs, Command},
+    converter::convert_images,
+    format::ImageFormat,
+    utils::remove_files,
+};
 use std::path::Path;
 
-/// Entry point of the `imgc` application.
-///
-/// Parses command-line arguments and initiates the image conversion process.
-/// If an error occurs during conversion, it is printed to the standard error output.
 fn main() {
     let args = CliArgs::parse();
-    let dir = args.dir;
-    let output_dir = args.output;
-
-    let path = Path::new(&dir);
-    if let Err(e) = convert_images(path, &output_dir) {
-        eprint!("Error {}", e)
+    match args.command {
+        Command::Webp { dir, output } => {
+            if let Err(e) = convert_images(Path::new(&dir), &output, &ImageFormat::Webp) {
+                eprintln!("Error: {}", e);
+            }
+        }
+        Command::Clean { dir, ext } => {
+            let dir_path = Path::new(&dir);
+            if let Err(e) = remove_files(dir_path, &ext) {
+                eprintln!("Error: {}", e);
+            }
+        }
     }
 }

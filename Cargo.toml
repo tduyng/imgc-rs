@@ -19,14 +19,6 @@ image = "0.25.1"
 rayon = "1.10.0"
 webp = "0.3.0"
 
-[[bin]]
-name = "imgc"
-path = "src/main.rs"
-
-[[bin]]
-name = "cleanup"
-path = "src/bin/cleanup.rs"
-
 [profile.dev]
 opt-level = 1
 debug = 1
