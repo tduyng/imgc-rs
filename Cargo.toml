@@ -2,7 +2,7 @@
 name = "imgconv"
 version = "0.1.0"
 edition = "2021"
-
+default-run = "imgconv"
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
@@ -11,7 +11,7 @@ rayon = "1.10.0"
 webp = "0.3.0"
 
 [[bin]]
-name = "cv"
+name = "imgconv"
 path = "src/main.rs"
 
 [[bin]]

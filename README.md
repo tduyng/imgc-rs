@@ -40,13 +40,13 @@ cargo build --release
 To convert images in a specific directory:
 
 ```bash
-cargo run --release --bin cv -- --dir examples
+cargo run --release -- --dir examples
 ````
 
 To specify an output directory:
 
 ```bash
-cargo run --release --bin cv --dir examples --output output_images
+cargo run --release -- --dir examples --output output_images
 ```
 
 ### Example directory structure
