@@ -1,6 +1,6 @@
 pub mod webp;
 
-use crate::{converter::webp::encode_webp, format::ImageFormat, utils::is_supported};
+use crate::{converter::webp::encode_webp, format::ImageFormat, utils::is_supported, Error};
 use image::io::Reader;
 use rayon::prelude::*;
 use std::{
@@ -13,10 +13,9 @@ pub fn convert_images(
     dir_path: &Path,
     output: &Option<String>,
     img_format: &ImageFormat,
-) -> Result<(), String> {
+) -> Result<(), Error> {
     if dir_path.is_dir() {
-        let entries: Vec<PathBuf> = fs::read_dir(dir_path)
-            .map_err(|e| format!("Failed to read directory: {}", e))?
+        let entries: Vec<PathBuf> = fs::read_dir(dir_path)?
             .filter_map(|entry| entry.ok().map(|e| e.path()))
             .collect();
 
@@ -38,16 +37,13 @@ fn convert_image(
     input_path: &Path,
     output_dir: &Option<String>,
     img_format: &ImageFormat,
-) -> Result<(), String> {
-    let image_reader =
-        Reader::open(input_path).map_err(|e| format!("Failed to open image: {}", e))?;
-    let image = image_reader
-        .decode()
-        .map_err(|e| format!("Failed to decode image: {}", e))?;
+) -> Result<(), Error> {
+    let image_reader = Reader::open(input_path)?;
+    let image = image_reader.decode()?;
 
     let image_data = match img_format {
         ImageFormat::Webp => encode_webp(&image)?,
-        _ => return Err("Unsupported image format".to_string()),
+        _ => return Err(Error::UnsupportedFormat),
     };
 
     let ext = img_format.extension();
@@ -59,9 +55,7 @@ fn convert_image(
         input_path.with_extension(ext)
     };
 
-    fs::write(output_path.clone(), image_data)
-        .map_err(|e| format!("Failed to write image file: {}", e))?;
-
+    fs::write(output_path.clone(), image_data)?;
     println!("Generated: {}", output_path.display());
 
     Ok(())
