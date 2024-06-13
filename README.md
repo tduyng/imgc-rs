@@ -1,23 +1,27 @@
-# Image Converter: imgc
+# Image Converter (imgc)
 
-Imgc is a Rust-based command-line application designed to convert various image formats using the [image](https://github.com/image-rs/image) crate. Currently, it only supports conversion to the WebP format.
+Welcome to imgc!
 
-It aims to provide a simple and efficient way to batch process image files for better performance and reduced storage space.
+This tool is a command-line utility built with Rust, focusing on converting images into the WebP format. Leveraging the powerful [image crate](https://github.com/image-rs/image), imgc simplifies the process of batch converting images, optimizing for both performance and storage efficiency.
 
-## Features
+## Key Features
 
-- Convert images from various formats to WebP using lossless encoding.
-- Supports common image formats (PNG, JPEG, etc.).
-- Customizable output directory for converted images.
-- Parallel processing using [rayon](https://github.com/rayon-rs/rayon).
+- **Efficient Conversion**: Easily convert a variety of image formats to WebP with lossless compression.
+- **Broad Format Support**: Works with many popular image formats, including PNG and JPEG.
+- **Custom Output**: Choose where your converted images are saved.
+- **Speedy Processing**: Takes advantage of `rayon` for fast, parallel processing.
+- **Glob Pattern Support**: Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
 
-## Requirements
 
-- Rust (latest stable version recommended)
+## Getting Started
 
-## Installation
+### Prerequisites
 
-As the package is not yet published on crates.io, you need to clone the repository and use it locally for testing.
+- Ensure you have the latest stable version of `Rust` and `Cargo` installed on your system.
+
+### Installation Guide
+
+Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
 
 1. Clone the repository:
 
@@ -32,46 +36,57 @@ As the package is not yet published on crates.io, you need to clone the reposito
     cargo build --release
     ```
 3. Install locally
-    
-    If you want use this tool on your computer, you can install it from this repository:
 
     ```bash
     cargo install --path .
     ```
-    After installation, you can use the command: `imgc`
+4. Install from Github
+    
+    If you want to test this tool without cloning the repository, you can install it directly from git:
 
-## Usage
+    ```bash
+    cargo install --git https://github.com/tduyng/imgc-rs.git
+    ```
+Once installed, you can start using imgc with the command `imgc`.
 
-### Running the Program
+5. Uninstall
 
-**To convert images in a specific directory:**
+    ```bash
+    cargo uninstall imgc
+    ```
+
+## How to Use imgc
+
+### Basic Usage
+
+Imgc program use glob patterns for easy file handling:
 
 ```bash
-cargo run --release webp -d examples
+imgc webp "examples/**/*.png"
+imgc webp "examples/**/*.jpg"
+imgc webp "examples/**/*"
 ```
 
-**To specify an output directory:**
+### Specifying an output directory
 
 ```bash
-cargo run --release webp -d examples -o output_images
+imgc webp "examples/**/*" -o output_images
 ```
 
-**To clean generated files:**
+### Cleaning up generated files
+**Warning**: Use this command with caution.
 
 ```bash
-cargo run --release clean -d examples -e webp
+imgc clean "examples/**/*.webp"
 ```
 
-For a better understanding of each command, you can run `--help` or `-h` to display the help information.
+### Command Help
+
+For detailed command usage, `--help` or `-h` will guide you through:
 
 ```bash
-cargo run -- -h
-```
-
-Output:
-
-```bash
-A CLI for converting images to the WebP format written in Rust
+❯ imgc -h              
+A CLI for converting images to the WebP format writtent in Rust
 
 Usage: imgc <COMMAND>
 
@@ -85,41 +100,35 @@ Options:
   -V, --version  Print version
 ```
 
-
-To display help for the webp command:
-
-```bash
-cargo run webp -h
-```
-
-Output:
+For the `webp` command:
 
 ```bash
+❯ imgc webp -h                                     
 Convert images to webp format
 
-Usage: imgc webp [OPTIONS] --dir <DIR>
+Usage: imgc webp [OPTIONS] <PATTERN>
+
+Arguments:
+  <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.jpg`
 
 Options:
-  -d, --dir <DIR>        (Required) Directory containing images to process
-  -o, --output <OUTPUT>  (Optional) Output directory for processed images. Defaults to the same location as the original images
+  -o, --output <OUTPUT>  (Optional) Output of processed images. Defaults to the same location as the original images
   -h, --help             Print help
-
 ```
 
-To display help for the clean command:
-```bash
-cargo run clean -h
-```
+For the `clean` command:
 
 ```bash
-Clean files by given extension
+❯ imgc clean -h                  
+Remove files matching a glob pattern
 
-Usage: imgc clean --dir <DIR> --ext <EXT>
+Usage: imgc clean <PATTERN>
+
+Arguments:
+  <PATTERN>  Glob pattern to match files to remove
 
 Options:
-  -d, --dir <DIR>  (Required) Directory to clean files
-  -e, --ext <EXT>  (Required) Extension of files to clean
-  -h, --help       Print help
+  -h, --help  Print help
 ```
 
 ## Example Directory Structure
@@ -140,7 +149,7 @@ examples
 │   └── 4.webp
 ```
 
-The command will convert all PNG, JPEG, and other supported images to WebP, placing them in the specified output directory or alongside the originals if no output directory is specified.
+Using imgc, you can convert all supported images to WebP, saving them either in a specified directory or alongside the original files.
 
 Example of webp command:
 
@@ -150,18 +159,13 @@ Example of clean command:
 
 ![Clean command example](/docs/img/clean_cmd.webp)
 
-## Roadmap
+## What's Next
 - [ ] Testing
-- [ ] Error handling enhancements
-- [ ] Advanced options: single image file, exclude fgsolders, quality, resizing options...
-- [ ] Progress reporting: show progress for large batch conversions.
-- [ ] Integration with image metadata: preserve metadata during the conversion process.
-- [ ] Parallel processing improvements: further optimize performance with advanced multithreading techniques.
-- [ ] Supports conversion to various formats
-
+- [ ] Introduce advanced options for compression, quality, and resizing
+- [ ] Expand support for additional conversion formats
 
 ## License
 
-[MIT License](./LICENCE_MIT) or [Apache License](./LICENSE_APACHE)
+Choose between [MIT License](./LICENCE_MIT) or [Apache License](./LICENSE_APACHE) as per your preference.
 
 

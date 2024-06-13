@@ -1,7 +1,18 @@
+use glob::glob;
 use std::{fs, path::Path};
 
 use crate::{format::ImageFormat, Error};
 
+/// Checks if the image format of the given path is supported, ignoring a specific format.
+///
+/// # Arguments
+///
+/// * `path` - The path to the image file.
+/// * `ignore_format` - The image format to ignore.
+///
+/// # Returns
+///
+/// Returns `true` if the image format is supported and not ignored, `false` otherwise.
 pub fn is_supported(path: &Path, ignore_format: &ImageFormat) -> bool {
     if let Some(extension) = path.extension() {
         if extension == ignore_format.extension() {
@@ -15,17 +26,21 @@ pub fn is_supported(path: &Path, ignore_format: &ImageFormat) -> bool {
     }
 }
 
-pub fn remove_files(dir: &Path, ext: &str) -> Result<(), Error> {
-    if dir.is_dir() {
-        for entry in fs::read_dir(dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_dir() {
-                remove_files(&path, ext)?;
-            } else if path.extension().and_then(|s| s.to_str()) == Some(ext) {
-                fs::remove_file(&path)?;
-                println!("Deleted: {}", path.display());
-            }
+/// Removes files that match the given pattern.
+///
+/// # Arguments
+///
+/// * `pattern` - The glob pattern to match files.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the files are successfully removed, or an `Error` if an error occurs.
+pub fn remove_files(pattern: &str) -> Result<(), Error> {
+    for entry in glob(pattern)? {
+        let path = entry?;
+        if path.is_file() {
+            fs::remove_file(&path)?;
+            println!("Deleted: {}", path.display());
         }
     }
 

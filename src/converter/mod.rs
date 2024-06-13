@@ -1,3 +1,4 @@
+/// This module provides functionality for converting images to different formats.
 pub mod webp;
 
 use crate::{converter::webp::encode_webp, format::ImageFormat, utils::is_supported, Error};
@@ -10,25 +11,19 @@ use std::{
 
 /// Processes and encodes images in a given directory to the specified image format.
 pub fn convert_images(
-    dir_path: &Path,
+    pattern: &str,
     output: &Option<String>,
     img_format: &ImageFormat,
 ) -> Result<(), Error> {
-    if dir_path.is_dir() {
-        let entries: Vec<PathBuf> = fs::read_dir(dir_path)?
-            .filter_map(|entry| entry.ok().map(|e| e.path()))
-            .collect();
+    let paths: Vec<PathBuf> = glob::glob(pattern)?
+        .filter_map(|entry| entry.ok())
+        .collect();
 
-        entries.par_iter().try_for_each(|path| {
-            if path.is_dir() {
-                convert_images(path, output, img_format)
-            } else if is_supported(path, img_format) {
-                convert_image(path, output, img_format)
-            } else {
-                Ok(())
-            }
-        })?;
-    }
+    paths
+        .par_iter()
+        .filter(|path| is_supported(path, img_format))
+        .try_for_each(|path| convert_image(path, output, img_format))?;
+
     Ok(())
 }
 

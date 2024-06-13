@@ -4,7 +4,9 @@ use clap::{Parser, Subcommand};
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct CliArgs {
+    /// The command to execute.
     #[command(subcommand)]
+    /// The available commands are `Webp` and `Clean`.
     pub command: Command,
 }
 
@@ -13,23 +15,18 @@ pub struct CliArgs {
 pub enum Command {
     /// Convert images to webp format
     Webp {
-        /// (Required) Directory containing images to process.
-        #[clap(short, long)]
-        dir: String,
+        /// Glob pattern to match images to convert.
+        /// Example: `images/**/*.png`
+        pattern: String,
 
         /// (Optional) Output of processed images. Defaults to the same location as the original images.
         #[clap(short, long)]
         output: Option<String>,
     },
 
-    /// Clean files by given extension
+    /// Remove files matching a glob pattern
     Clean {
-        /// (Required) Directory to clean files
-        #[clap(short, long)]
-        dir: String,
-
-        /// (Required) Extension files to clean
-        #[clap(short, long)]
-        ext: String,
+        /// Glob pattern to match files to remove.
+        pattern: String,
     },
 }

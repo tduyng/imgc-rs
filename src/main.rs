@@ -4,22 +4,14 @@ use imgc::{
     converter::convert_images,
     format::ImageFormat,
     utils::remove_files,
+    Error,
 };
-use std::path::Path;
 
-fn main() {
+fn main() -> Result<(), Error> {
     let args = CliArgs::parse();
     match args.command {
-        Command::Webp { dir, output } => {
-            if let Err(e) = convert_images(Path::new(&dir), &output, &ImageFormat::Webp) {
-                eprintln!("Error: {}", e);
-            }
-        }
-        Command::Clean { dir, ext } => {
-            let dir_path = Path::new(&dir);
-            if let Err(e) = remove_files(dir_path, &ext) {
-                eprintln!("Error: {}", e);
-            }
-        }
+        Command::Webp { pattern, output } => convert_images(&pattern, &output, &ImageFormat::Webp)?,
+        Command::Clean { pattern } => remove_files(&pattern)?,
     }
+    Ok(())
 }

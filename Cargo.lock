@@ -431,6 +431,7 @@ name = "imgc"
 version = "0.0.1"
 dependencies = [
  "clap",
+ "glob",
  "image",
  "rayon",
  "thiserror",
