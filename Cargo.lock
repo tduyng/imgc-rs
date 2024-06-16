@@ -434,7 +434,6 @@ dependencies = [
  "glob",
  "image",
  "rayon",
- "thiserror",
  "webp",
 ]
 

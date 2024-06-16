@@ -38,7 +38,7 @@ fn convert_image(
 
     let image_data = match img_format {
         ImageFormat::Webp => encode_webp(&image)?,
-        _ => return Err(Error::UnsupportedFormat),
+        _ => return Err(Error::from_string("Unsupported image format".to_string())),
     };
 
     let ext = img_format.extension();
