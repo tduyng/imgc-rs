@@ -24,6 +24,7 @@ pub fn convert_images(
         .filter_map(|entry| entry.ok())
         .collect();
 
+    // TODO: encoding statistics, progress information, finish ETA
     paths
         .par_iter()
         .filter(|path| is_supported(path, img_format))
@@ -49,6 +50,7 @@ fn convert_image(
     let encode_speed: u8 = option_speed.unwrap_or(3);
 
     let image_data = match img_format {
+        // TODO: PNG lossless optimizer, image-rs webp encoder path
         ImageFormat::Webp => encode_webp(&image, encode_lossless, encode_quality)?,
         ImageFormat::Avif => encode_avif(&image, encode_quality, encode_speed, None, None)?,
         _ => return Err(Error::from_string("Unsupported image format".to_string())),

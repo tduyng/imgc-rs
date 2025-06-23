@@ -4,7 +4,7 @@ version = "0.0.2"
 edition = "2024"
 authors = ["Duy NG <hi@tduyng.com>"]
 description = "A CLI for converting images to the WebP format writtent in Rust"
-license = "MIT/Apache-2.0"
+license = "MIT"
 documentation = "https://docs.rs/imgc"
 homepage = "https://github.com/tduyng/imgc-rs"
 repository = "https://github.com/tduyng/imgc-rs"
@@ -17,8 +17,7 @@ categories = [
 ]
 include = [
     "README.md",
-    "LICENSE_MIT",
-    "LICENSE_APACHE",
+    "LICENSE",
     "Cargo.toml",
     "/src/*.rs",
 ]

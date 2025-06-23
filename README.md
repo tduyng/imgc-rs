@@ -166,6 +166,6 @@ Example of clean command:
 
 ## License
 
-This project under the [MIT License](./LICENCE_MIT)
+This project under the [MIT License](LICENCE)
 
 
