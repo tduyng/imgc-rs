@@ -36,13 +36,16 @@ pub fn is_supported(path: &Path, ignore_format: &ImageFormat) -> bool {
 ///
 /// Returns `Ok(())` if the files are successfully removed, or an `Error` if an error occurs.
 pub fn remove_files(pattern: &str) -> Result<(), Error> {
+    let mut total_deleted_bytes: usize = 0;
     for entry in glob(pattern)? {
         let path = entry?;
         if path.is_file() {
+            total_deleted_bytes += fs::metadata(&path)?.len() as usize;
             fs::remove_file(&path)?;
             println!("Deleted: {}", path.display());
         }
     }
+    println!("Deleted: {} bytes", total_deleted_bytes);
 
     Ok(())
 }

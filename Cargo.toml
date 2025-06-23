@@ -31,6 +31,7 @@ rayon = "1.10.0"
 webp = "0.3"
 ravif = "0.12.0"
 rgb = "0.8.50"
+indicatif = {version = "*", features = ["rayon"]}
 
 [profile.dev]
 opt-level = 1

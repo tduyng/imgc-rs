@@ -23,6 +23,10 @@ pub enum Command {
         #[clap(short, long)]
         output: Option<String>,
 
+        /// (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
+        #[clap(short, long)]
+        overwrite_existing: Option<bool>,
+
         /// (Optional) Use lossless encoding mode. Defaults to false.
         #[clap(short, long)]
         lossless: Option<bool>,
@@ -40,6 +44,10 @@ pub enum Command {
         /// (Optional) Output of processed images. Defaults to the same location as the original images.
         #[clap(short, long)]
         output: Option<String>,
+
+        /// (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
+        #[clap(short, long)]
+        overwrite_existing: Option<bool>,
 
         /// (Optional) Control target quality for encoding (0 - 100, lower is worse). Defaults to 90.0.
         #[clap(short, long)]
