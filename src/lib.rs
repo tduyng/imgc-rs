@@ -3,16 +3,24 @@
 
 Welcome to imgc!
 
-This tool is a command-line utility built with Rust, focusing on converting images into the WebP format. Leveraging the powerful [image crate](https://github.com/image-rs/image), imgc simplifies the process of batch converting images, optimizing for both performance and storage efficiency.
+This tool is a command-line utility built with Rust,
+ focusing on converting images into the WebP format.
+Leveraging the powerful [image crate](https://github.com/image-rs/image),
+ imgc simplifies the process of batch converting images,
+ optimizing for both performance and storage efficiency.
 
 ## Key Features
 
-- **Efficient Conversion**: Easily convert a variety of image formats to WebP with lossless compression.
-- **Broad Format Support**: Works with many popular image formats, including PNG and JPEG.
-- **Custom Output**: Choose where your converted images are saved.
-- **Speedy Processing**: Takes advantage of `rayon` for fast, parallel processing.
-- **Glob Pattern Support**: Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
-
+- **Efficient Conversion**: 
+ Convert a variety of image formats to WebP or AVIF with lossy or lossless compression.
+- **Broad Format Support**: 
+ Works with many popular image formats, including PNG and JPEG.
+- **Custom Output**:
+ Choose where your converted images are saved.
+- **Speedy Processing**:
+ Takes advantage of `rayon` for fast, parallel processing.
+- **Glob Pattern Support**: 
+ Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
 
 ## Getting Started
 
@@ -22,7 +30,8 @@ This tool is a command-line utility built with Rust, focusing on converting imag
 
 ### Installation Guide
 
-Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
+Since `imgc` is not yet available on crates.io,
+ you'll need to clone the repository to get started:
 
 1. Clone the repository:
 
@@ -41,14 +50,15 @@ Since imgc is not yet available on crates.io, you'll need to clone the repositor
     ```bash
     cargo install --path .
     ```
-4. Install from Github
+4. Install from GitHub
     
-    If you want to test this tool without cloning the repository, you can install it directly from git:
+    If you want to test this tool without cloning the repository,
+     you can install it directly from git:
 
     ```bash
     cargo install --git https://github.com/Gunzinger/imgc-rs.git
     ```
-Once installed, you can start using imgc with the command `imgc`.
+   Once installed, you can start using the `imgc` command.
 
 5. Uninstall
 
@@ -60,7 +70,7 @@ Once installed, you can start using imgc with the command `imgc`.
 
 ### Basic Usage
 
-Imgc program use glob patterns for easy file handling:
+The `imgc` program uses glob patterns for target selection:
 
 ```bash
 imgc webp "examples/**/*.png"
@@ -75,7 +85,8 @@ imgc webp "examples/**/*" -o output_images
 ```
 
 ### Cleaning up generated files
-**Warning**: Use this command with caution.
+
+**Warning**: Use this command with caution. This is basically `rm -rf` with regex.
 
 ```bash
 imgc clean "examples/**/*.webp"
@@ -83,17 +94,18 @@ imgc clean "examples/**/*.webp"
 
 ### Command Help
 
-For detailed command usage, `--help` or `-h` will guide you through:
+For detailed command usage, see all arguments with `--help` or `-h`:
 
 ```bash
 ❯ imgc -h              
-A CLI for converting images to the WebP format writtent in Rust
+A configurable and efficient batch image converterwritten in Rust.
 
 Usage: imgc <COMMAND>
 
 Commands:
   webp   Convert images to webp format
-  clean  Clean files by given extension
+  avif   Convert images to avif format
+  clean  Remove files matching a glob pattern
   help   Print this message or the help of the given subcommand(s)
 
 Options:
@@ -110,11 +122,33 @@ Convert images to webp format
 Usage: imgc webp [OPTIONS] <PATTERN>
 
 Arguments:
-  <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.jpg`
+  <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.png`
 
 Options:
-  -o, --output <OUTPUT>  (Optional) Output of processed images. Defaults to the same location as the original images
-  -h, --help             Print help
+  -o, --output <OUTPUT>     (Optional) Output of processed images. Defaults to the same location as the original images
+      --overwrite-existing  (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
+      --lossless            (Optional) Use lossless encoding mode. Defaults to false
+  -q, --quality <QUALITY>   (Optional) Control target quality for encoding (0 - 100, lower is worse). Defaults to 90.0
+  -h, --help                Print help
+```
+
+For the `avif` command:
+
+```bash
+❯ imgc avif -h                                     
+Convert images to avif format
+
+Usage: imgc avif [OPTIONS] <PATTERN>
+
+Arguments:
+  <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.png`
+
+Options:
+  -o, --output <OUTPUT>     (Optional) Output of processed images. Defaults to the same location as the original images
+      --overwrite-existing  (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
+  -q, --quality <QUALITY>   (Optional) Control target quality for encoding (0 - 100, lower is worse). Defaults to 90.0
+  -s, --speed <SPEED>       (Optional) Control encoding speed (1 - 10, lower is much slower but has a better quality and lower filesize). Defaults to 3
+  -h, --help                Print help
 ```
 
 For the `clean` command:
@@ -133,6 +167,7 @@ Options:
 ```
 
 ## Example Directory Structure
+
 Given the following directory structure:
 
 ```bash
@@ -150,7 +185,7 @@ examples
 │   └── 4.webp
 ```
 
-Using imgc, you can convert all supported images to WebP, saving them either in a specified directory or alongside the original files.
+Using `imgc`, you can convert all [supported images](https://docs.rs/image/0.25.6/image/codecs/index.html#supported-formats) to WebP or AVIF, saving them either in a specified directory or alongside the original files.
 
 Example of webp command:
 
@@ -162,12 +197,12 @@ Example of clean command:
 
 ## What's Next
 - [ ] Testing
-- [ ] Introduce advanced options for compression, quality, and resizing
-- [ ] Expand support for additional conversion formats
+- [ ] Introduce advanced options for resizing
+- [ ] Expand support for additional conversion formats and encoding libraries
 
 ## License
 
-This project under the [MIT License](./LICENCE).
+This project under the [MIT License](LICENCE)
 */
 
 #![deny(missing_docs)]
