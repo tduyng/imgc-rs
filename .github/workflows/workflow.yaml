@@ -35,6 +35,33 @@ jobs:
           sed -i "s/0\\.0\\.0-git/${DOCKER_METADATA_OUTPUT_VERSION#v}/" Cargo.lock
           grep -i -C 5 "imgc" Cargo.lock
 
+      - name: Install Linux and Windows Cross Compilers
+        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32
+
+      - name: Install rustup targets
+        run: rustup target add x86_64-unknown-linux-musl x86_64-pc-windows-gnu
+
+      - name: Build the executable
+        run: cargo build --release --target x86_64-unknown-linux-musl --target x86_64-pc-windows-gnu
+
+      - name: Tar x86_64 binary
+        run: tar -czvf "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" -C target/x86_64-unknown-linux-musl/release imgc-rs
+
+      - name: Zip windows binary
+        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}windows.zip" target/x86_64-pc-windows-gnu/release/imgc-rs.exe
+
+      - name: Generate SHA256 checksums
+        run: |
+          shasum -a 256 imgc-rs-gnu-linux-x86_64.tar.gz > imgc-rs-gnu-linux-x86_64.tar.gz.sha256
+          shasum -a 256 imgc-rs-windows.zip > imgc-rs-windows.zip.sha256
+
+      - name: Upload release binaries
+        uses: alexellis/upload-assets@0.4.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: '["imgc-rs-gnu-linux-x86_64.tar.gz", "imgc-rs-windows.zip", "imgc-rs-gnu-linux-x86_64.tar.gz.sha256", "imgc-rs-windows.zip.sha256"]'
+
       - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
