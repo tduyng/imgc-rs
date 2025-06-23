@@ -49,19 +49,19 @@ jobs:
         run: tar -czvf "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" -C target/x86_64-unknown-linux-musl/release imgc
 
       - name: Zip windows binary
-        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}windows.zip" target/x86_64-pc-windows-gnu/release/imgc.exe
+        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip" target/x86_64-pc-windows-gnu/release/imgc.exe
 
       - name: Generate SHA256 checksums
         run: |
-          shasum -a 256 imgc-rs-gnu-linux-x86_64.tar.gz > imgc-rs-gnu-linux-x86_64.tar.gz.sha256
-          shasum -a 256 imgc-rs-windows.zip > imgc-rs-windows.zip.sha256
+          shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz.sha256"
+          shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip.sha256"
 
       - name: Upload release binaries
         uses: alexellis/upload-assets@0.4.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: '["imgc-rs-gnu-linux-x86_64.tar.gz", "imgc-rs-windows.zip", "imgc-rs-gnu-linux-x86_64.tar.gz.sha256", "imgc-rs-windows.zip.sha256"]'
+          asset_paths: "['imgc-rs-*-gnu-linux-x86_64.tar.gz', 'imgc-rs-*-windows.zip', 'imgc-rs-*-gnu-linux-x86_64.tar.gz.sha256', 'imgc-rs-*-windows.zip.sha256']"
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
