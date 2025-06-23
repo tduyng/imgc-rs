@@ -36,7 +36,8 @@ jobs:
           grep -i -C 5 "imgc" Cargo.lock
 
       - name: Install Linux and Windows Cross Compilers
-        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32
+        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32 nasm
+        # nasm is needed for rav1e
 
       - name: Install rustup targets
         run: rustup target add x86_64-unknown-linux-musl x86_64-pc-windows-gnu
