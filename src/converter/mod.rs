@@ -1,8 +1,10 @@
-/// This module provides functionality for converting images to different formats.
+/// This module provides webp conversion
 pub mod webp;
+/// This module provides avif conversion
+pub mod avif;
 
-use crate::{converter::webp::encode_webp, format::ImageFormat, utils::is_supported, Error};
-use image::io::Reader;
+use crate::{converter::webp::encode_webp, converter::avif::encode_avif, format::ImageFormat, utils::is_supported, Error};
+use image::ImageReader;
 use rayon::prelude::*;
 use std::{
     fs,
@@ -12,8 +14,11 @@ use std::{
 /// Processes and encodes images in a given directory to the specified image format.
 pub fn convert_images(
     pattern: &str,
-    output: &Option<String>,
     img_format: &ImageFormat,
+    output: &Option<String>,
+    option_lossless: &Option<bool>,
+    option_quality: &Option<f32>,
+    option_speed: &Option<u8>,
 ) -> Result<(), Error> {
     let paths: Vec<PathBuf> = glob::glob(pattern)?
         .filter_map(|entry| entry.ok())
@@ -22,7 +27,7 @@ pub fn convert_images(
     paths
         .par_iter()
         .filter(|path| is_supported(path, img_format))
-        .try_for_each(|path| convert_image(path, output, img_format))?;
+        .try_for_each(|path| convert_image(path, img_format, output, option_lossless, option_quality, option_speed))?;
 
     Ok(())
 }
@@ -30,14 +35,22 @@ pub fn convert_images(
 /// Encodes an image to the specified image format and saves it to the specified output directory.
 fn convert_image(
     input_path: &Path,
-    output_dir: &Option<String>,
     img_format: &ImageFormat,
+    output_dir: &Option<String>,
+    option_lossless: &Option<bool>,
+    option_quality: &Option<f32>,
+    option_speed: &Option<u8>,
 ) -> Result<(), Error> {
-    let image_reader = Reader::open(input_path)?;
+    let image_reader = ImageReader::open(input_path)?;
     let image = image_reader.decode()?;
 
+    let encode_lossless = option_lossless.unwrap_or(false);
+    let encode_quality: f32 = option_quality.unwrap_or(90.);
+    let encode_speed: u8 = option_speed.unwrap_or(3);
+
     let image_data = match img_format {
-        ImageFormat::Webp => encode_webp(&image)?,
+        ImageFormat::Webp => encode_webp(&image, encode_lossless, encode_quality)?,
+        ImageFormat::Avif => encode_avif(&image, encode_quality, encode_speed, None, None)?,
         _ => return Err(Error::from_string("Unsupported image format".to_string())),
     };
 

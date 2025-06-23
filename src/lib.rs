@@ -67,6 +67,11 @@ imgc webp "examples/**/*.png"
 imgc webp "examples/**/*.jpg"
 imgc webp "examples/**/*"
 ```
+```bash
+imgc avif "examples/**/*.png"
+imgc avif "examples/**/*.jpg"
+imgc avif "examples/**/*"
+```
 
 ### Specifying an output directory
 
@@ -93,6 +98,7 @@ Usage: imgc <COMMAND>
 
 Commands:
   webp   Convert images to webp format
+  avif   Convert images to avif format
   clean  Clean files by given extension
   help   Print this message or the help of the given subcommand(s)
 
@@ -108,6 +114,22 @@ For the `webp` command:
 Convert images to webp format
 
 Usage: imgc webp [OPTIONS] <PATTERN>
+
+Arguments:
+  <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.jpg`
+
+Options:
+  -o, --output <OUTPUT>  (Optional) Output of processed images. Defaults to the same location as the original images
+  -h, --help             Print help
+```
+
+For the `avif` command:
+
+```bash
+❯ imgc avif -h                                     
+Convert images to avif format
+
+Usage: imgc avif [OPTIONS] <PATTERN>
 
 Arguments:
   <PATTERN>  Glob pattern to match images to convert. Example: `images/**/*.jpg`
@@ -155,6 +177,10 @@ Using imgc, you can convert all supported images to WebP, saving them either in 
 Example of webp command:
 
 ![Webp command example](https://raw.githubusercontent.com/tduyng/imgc-rs/main/docs/img/webp_cmd.webp)
+
+Example of avif command:
+
+![Webp command example](https://raw.githubusercontent.com/tduyng/imgc-rs/main/docs/img/avif_cmd_TODO.webp)
 
 Example of clean command:
 

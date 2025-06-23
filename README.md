@@ -26,7 +26,7 @@ Since imgc is not yet available on crates.io, you'll need to clone the repositor
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/tduyng/imgc-rs.git
+    git clone https://github.com/Gunzinger/imgc-rs.git
     cd imgc-rs
     ```
 
@@ -45,7 +45,7 @@ Since imgc is not yet available on crates.io, you'll need to clone the repositor
     If you want to test this tool without cloning the repository, you can install it directly from git:
 
     ```bash
-    cargo install --git https://github.com/tduyng/imgc-rs.git
+    cargo install --git https://github.com/Gunzinger/imgc-rs.git
     ```
 Once installed, you can start using imgc with the command `imgc`.
 
@@ -166,6 +166,6 @@ Example of clean command:
 
 ## License
 
-Choose between [MIT License](./LICENCE_MIT) or [Apache License](./LICENSE_APACHE) as per your preference.
+This project under the [MIT License](./LICENCE_MIT)
 
 
