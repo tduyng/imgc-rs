@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{ArgAction, Parser, Subcommand};
 
 /// Image converter CLI
 #[derive(Parser, Debug)]
@@ -24,11 +24,11 @@ pub enum Command {
         output: Option<String>,
 
         /// (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
-        #[clap(short, long)]
+        #[clap(long, action = Some(ArgAction::SetTrue))]
         overwrite_existing: Option<bool>,
 
         /// (Optional) Use lossless encoding mode. Defaults to false.
-        #[clap(short, long)]
+        #[clap(long, action = Some(ArgAction::SetTrue))]
         lossless: Option<bool>,
 
         /// (Optional) Control target quality for encoding (0 - 100, lower is worse). Defaults to 90.0.
@@ -46,7 +46,7 @@ pub enum Command {
         output: Option<String>,
 
         /// (Optional) Overwrite existing outputs? Defaults to false. (Determined by filename match)
-        #[clap(short, long)]
+        #[clap(long, action = Some(ArgAction::SetTrue))]
         overwrite_existing: Option<bool>,
 
         /// (Optional) Control target quality for encoding (0 - 100, lower is worse). Defaults to 90.0.

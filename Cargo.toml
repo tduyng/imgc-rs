@@ -1,9 +1,9 @@
 [package]
 name = "imgc"
-version = "0.0.2"
+version = "0.1.0"
 edition = "2024"
-authors = ["Duy NG <hi@tduyng.com>"]
-description = "A CLI for converting images to the WebP format writtent in Rust"
+authors = ["Duy NG <hi@tduyng.com>", "Daniel Gunzinger <daniel.gunzinger@posteo.de>"]
+description = "A configurable and efficient batch image converterwritten in Rust."
 license = "MIT"
 documentation = "https://docs.rs/imgc"
 homepage = "https://github.com/tduyng/imgc-rs"
@@ -32,6 +32,10 @@ webp = "0.3"
 ravif = "0.12.0"
 rgb = "0.8.50"
 indicatif = {version = "*", features = ["rayon"]}
+bytesize = "2.0.1"
+
+[build-dependencies]
+cargo_metadata = "0.20.0"
 
 [profile.dev]
 opt-level = 1

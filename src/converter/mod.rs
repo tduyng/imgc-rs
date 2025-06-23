@@ -11,7 +11,11 @@ use std::{
     path::{Path, PathBuf},
 };
 use std::collections::LinkedList;
+use bytesize::ByteSize;
 use indicatif::{ParallelProgressIterator, ProgressStyle};
+
+// Include dependency version numbers
+include!(concat!(env!("OUT_DIR"), "/versions.rs"));
 
 /// Processes and encodes images in a given directory to the specified image format.
 pub fn convert_images(
@@ -27,18 +31,45 @@ pub fn convert_images(
         .filter_map(|entry| entry.ok())
         .collect();
     paths.sort_by(|a,b| a.file_name().cmp(&b.file_name()));
-    
+
+    let encoder_data = match img_format {
+        // TODO: PNG lossless optimizer, image-rs webp encoder path
+        ImageFormat::Webp => webp::encoder_info(option_lossless.unwrap_or(false), option_quality.unwrap_or(90.)),
+        ImageFormat::Avif => avif::encoder_info(option_quality.unwrap_or(90.), option_speed.unwrap_or(3), None, None),
+        _ => "unknown encoder".parse().unwrap(),
+    };
+
+    println!("Converting {} files...", paths.len());
+    println!("{}", encoder_data);
+
     let style = ProgressStyle::with_template("[{elapsed_precise}/~{duration_precise} ({eta_precise} rem.)] {wide_bar:.cyan/blue} {pos:>7}/{len:7}").unwrap();
-    let _results: LinkedList<Vec<()>> = paths
+    let _results: LinkedList<(isize, usize, usize)> = paths.clone()
         .into_par_iter()
         .progress_with_style(style)
         .filter(|path| is_supported(path, img_format))
         .map(|path| convert_image(&*path, img_format, output, overwrite_existing, option_lossless, option_quality, option_speed)
-            .map_err(|err| eprintln!("Failed to convert image {:?} : {:?}", path, err)).unwrap()
+            .map_err(|err| eprintln!("Failed to convert image {:?} : {:?}", path, err)).unwrap_or_else(|_| (-2, 0, 0))
         )
-        .collect_vec_list();
-    
-    // TODO: encoding statistics
+        .collect();
+
+    let encode_successful = _results.par_iter().filter(|(status, _, _)| *status == 0).count();
+    let encode_existing = _results.par_iter().filter(|(status, _, _)| *status == -1).count();
+    let encode_errors = _results.par_iter().filter(|(status, _, _)| *status == -2).count();
+    let total_input_size = _results.par_iter().filter(|(status, _, _)| *status == 0 || *status == -1)
+        .map(|(_, input_size, _)| input_size).sum::<usize>();
+    let total_output_size = _results.par_iter().filter(|(status, _, _)| *status == 0 || *status == -1)
+        .map(|(_, _, output_size)| output_size).sum::<usize>();
+    println!("Encode statistics:");
+    println!("Successful: {:?}", encode_successful);
+    println!("Skipped:    {:?}", encode_existing);
+    println!("Errors:     {:?}", encode_errors);
+    if total_input_size > 0 && total_output_size > 0 {
+        println!("Total input size:  {}", ByteSize::b(total_input_size as u64));
+        println!("Total output size: {}", ByteSize::b(total_output_size as u64));
+        println!("Compression ratio: {:.02}%", total_output_size as f64 / total_input_size as f64 * 100.0);
+    } else {
+        println!("Input and output size could not be determined, please try using OS-native binaries.")
+    }
     Ok(())
 }
 
@@ -51,7 +82,8 @@ fn convert_image(
     option_lossless: &Option<bool>,
     option_quality: &Option<f32>,
     option_speed: &Option<u8>,
-) -> Result<(), Error> {
+) -> Result<(isize, usize, usize), Error> {
+    // returns tuple (status, input_size (B), output_size (B))
     let ext = img_format.extension();
     let output_path = if let Some(output_dir) = output_dir {
         Path::new(&output_dir)
@@ -60,10 +92,11 @@ fn convert_image(
     } else {
         input_path.with_extension(ext)
     };
+    let input_size = fs::metadata(&input_path)?.len();
     
     if fs::exists(output_path.clone())? && !overwrite_existing.unwrap_or(false) {
         // file exists, and we do not have the overwrite flag on? => return early
-        return Ok(())
+        return Ok((-1, input_size as usize, fs::metadata(&output_path)?.len() as usize))
     }
 
     let image_reader = ImageReader::open(input_path)?;
@@ -79,9 +112,8 @@ fn convert_image(
         ImageFormat::Avif => encode_avif(&image, encode_quality, encode_speed, None, None)?,
         _ => return Err(Error::from_string("Unsupported image format".to_string())),
     };
-
+    let output_size =  image_data.len();
     fs::write(output_path.clone(), image_data)?;
-    //println!("Generated: {}", output_path.display());
 
-    Ok(())
+    Ok((0, input_size as usize, output_size))
 }
