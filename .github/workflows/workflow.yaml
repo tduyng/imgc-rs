@@ -46,10 +46,10 @@ jobs:
         run: cargo build --release --target x86_64-unknown-linux-musl --target x86_64-pc-windows-gnu
 
       - name: Tar x86_64 binary
-        run: tar -czvf "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" -C target/x86_64-unknown-linux-musl/release/imgc-rs
+        run: tar -czvf "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" -C target/x86_64-unknown-linux-musl/release/imgc
 
       - name: Zip windows binary
-        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}windows.zip" target/x86_64-pc-windows-gnu/release/imgc-rs.exe
+        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}windows.zip" target/x86_64-pc-windows-gnu/release/imgc.exe
 
       - name: Generate SHA256 checksums
         run: |
