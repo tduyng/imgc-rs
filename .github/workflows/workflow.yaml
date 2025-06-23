@@ -30,16 +30,12 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
-      - name: Get Version
-        run: echo "GIT_VERSION=$(git describe --tags)" >> $GITHUB_ENV
-
       - name: Set Cargo.toml version
         shell: bash
         run: |
-          mv Cargo.toml Cargo.toml.orig
-          sed "s/0\\.0\\.0-git/${GIT_VERSION##*\/v}/" Cargo.toml.orig >Cargo.toml
-          mv Cargo.lock Cargo.lock.orig
-          sed "s/0\\.0\\.0-git/${GIT_VERSION##*\/v}/" Cargo.lock.orig >Cargo.lock
+          export GIT_VERSION="$(git describe --tags)"
+          sed -i "s/0\\.0\\.0-git/${GIT_VERSION##*\/v}/" Cargo.toml
+          sed -i "s/0\\.0\\.0-git/${GIT_VERSION##*\/v}/" Cargo.lock
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
@@ -52,5 +48,5 @@ jobs:
         with:
           file: Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAME }}:${{ env.GIT_VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
