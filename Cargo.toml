@@ -1,6 +1,6 @@
 [package]
 name = "imgc"
-version = "0.1.0"
+version = "0.0.0-git"
 edition = "2024"
 authors = ["Duy NG <hi@tduyng.com>", "Daniel Gunzinger <daniel.gunzinger@posteo.de>"]
 description = "A configurable and efficient batch image converterwritten in Rust."
@@ -26,7 +26,8 @@ default-run = "imgc"
 [dependencies]
 clap = { version = "4.5.40", features = ["derive"] }
 glob = "0.3.2"
-image = "0.25.6"
+#image = {version = "0.25.6", features = ["avif-native"] } # problematic on windows
+image = {version = "0.25.6"}
 rayon = "1.10.0"
 webp = "0.3"
 ravif = "0.12.0"
