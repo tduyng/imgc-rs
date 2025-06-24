@@ -1,13 +1,27 @@
-# Image Converter (imgc)
+# Image Converter `imgc`
 
-Welcome to imgc!
-
-This tool is a command-line utility built with Rust,
- focusing on converting images into other formats,
- specifically targeting modern image standards and encoders.
+`imgc` is a command-line utility focusing on converting images into other formats,
+ specifically targeting support modern image standards and encoders.
 Leveraging the powerful [image crate](https://github.com/image-rs/image),
- `imgc` simplifies the process of batch converting images,
+
+`imgc` simplifies the process of batch converting images,
  optimizing for both performance and storage efficiency.
+
+### Usage example using the docker container:
+```bash
+> docker run -v ./examples/:/targets/ -it gunzinger/imgc-rs:latest imgc avif "**/*.*"
+Converting 16 files...
+Using "ravif" (0.12.0) with options (quality: 90, speed: 3, bit depth: Eight, color model: RGB)
+Encode statistics:
+Successful: 15
+Skipped:    0
+Errors:     0
+Total input size:  24.0 MiB
+Total output size: 13.2 MiB
+Compression ratio: 54.95%
+```
+
+---
 
 ## Key Features
 
@@ -20,53 +34,38 @@ Leveraging the powerful [image crate](https://github.com/image-rs/image),
 - **Speedy Processing**:
  Takes advantage of `rayon` for fast, parallel processing.
 - **Glob Pattern Support**: 
- Since `imgc` is not yet available on [crates.io](https://crates.io), you'll need to clone the repository to get started:
+ Target selection is made intuitive for cli enthusiasts via glob patterns.
 
-## Getting Started
+---
 
-### Prerequisites
+## Installation
 
-- Ensure you have the latest stable version of `Rust` and `Cargo` installed on your system.
+### Using published binaries
 
-### Installation Guide
+Binaries for Windows and Linux are built for every tag.
 
-Since `imgc` is not yet available on crates.io,
- you'll need to clone the repository to get started:
+See the [GitHub releases](https://github.com/Gunzinger/imgc-rs/releases) page for downloads.
 
-1. Clone the repository:
+### Using the docker image
 
-    ```bash
-    git clone https://github.com/Gunzinger/imgc-rs.git
-    cd imgc-rs
-    ```
+Docker containers are also built for every tag.
 
-2. Build the project:
+See the [Docker Hub](https://hub.docker.com/r/gunzinger/imgc-rs) page for available tags.
 
-    ```bash
-    cargo build --release
-    ```
-3. Install locally
+```bash
+docker run -it gunzinger/imgc-rs:latest imgc --help
 
-    ```bash
-    cargo install --path .
-    ```
-4. Install from GitHub
-    
-    If you want to test this tool without cloning the repository,
-     you can install it directly from git:
+# directory passthrough on linux
+docker run -v ./input-folder/:/targets/ -it gunzinger/imgc-rs:latest imgc avif "/targets/**/*.png"
 
-    ```bash
-    cargo install --git https://github.com/Gunzinger/imgc-rs.git
-    ```
-   Once installed, you can start using the `imgc` command.
+# note that on windows the volume passthroughs need to have absolute paths, e.g. (for powershell)
+docker run -v ${PWD}/input-folder/:/targets/ -it gunzinger/imgc-rs:latest imgc avif "/targets/**/*.png"
 
-5. Uninstall
+```
 
-    ```bash
-    cargo uninstall imgc
-    ```
+---
 
-## How to Use imgc
+## How to Use `imgc`
 
 ### Basic Usage
 
@@ -92,13 +91,15 @@ imgc webp "examples/**/*" -o output_images
 imgc clean "examples/**/*.webp"
 ```
 
+---
+
 ### Command Help
 
 For detailed command usage, see all arguments with `--help` or `-h`:
 
 ```bash
 ❯ imgc -h              
-A configurable and efficient batch image converterwritten in Rust.
+A configurable and efficient batch image converter written in Rust.
 
 Usage: imgc <COMMAND>
 
@@ -154,7 +155,7 @@ Options:
 For the `clean` command:
 
 ```bash
-❯ imgc clean -h                  
+> imgc clean -h                  
 Remove files matching a glob pattern
 
 Usage: imgc clean <PATTERN>
@@ -185,7 +186,8 @@ examples
 │   └── 4.webp
 ```
 
-Using `imgc`, you can convert all [supported images](https://docs.rs/image/0.25.6/image/codecs/index.html#supported-formats) to WebP or AVIF, saving them either in a specified directory or alongside the original files.
+Using `imgc` you can convert all [supported images](https://docs.rs/image/0.25.6/image/codecs/index.html#supported-formats)
+ to WebP or AVIF, saving them either in a specified directory or alongside the original files.
 
 Example of webp command:
 
@@ -195,10 +197,55 @@ Example of clean command:
 
 ![Clean command example](/docs/img/clean_cmd.webp)
 
+---
+
+## Building from source
+
+### Prerequisites
+
+- Ensure you have the latest stable version of `Rust` and `Cargo` installed on your system.
+- [Nasm](https://www.nasm.us/) is needed for building `rav1e`.
+  Install via `apt install nasm` / `apk add nasm` / `choco install nasm`.
+
+### Installation Guide
+
+#### Install via crate
+
+To install via the [published crate](https://crates.io/crates/imgc), execute the following command:
+
+```bash
+cargo install imgc
+```
+
+#### Install from git
+
+```bash
+# 1. Clone the repository:
+git clone https://github.com/Gunzinger/imgc-rs.git
+cd imgc-rs
+# 2. Build the project:
+cargo build --release
+3. Install locally
+cargo install --path .
+```
+
+#### Uninstalling
+
+To uninstall, remove the tool via `cargo uninstall`:
+
+```bash
+cargo uninstall imgc
+```
+
+---
+
 ## What's Next
+
 - [ ] Testing
 - [ ] Introduce advanced options for resizing
 - [ ] Expand support for additional conversion formats and encoding libraries
+
+---
 
 ## License
 
