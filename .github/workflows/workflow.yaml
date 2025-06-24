@@ -75,7 +75,8 @@ jobs:
           asset_paths: '["imgc-rs-*-gnu-linux-x86_64.tar.gz*", "imgc-rs-*-windows.zip*"]'
 
       - name: Cargo publish crate
-        run: cargo publish
+        run: cargo publish --allow-dirty
+        # --allow-dirty is needed as we modify Cargo.toml and Cargo.lock with our freshly generated version number
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
 
