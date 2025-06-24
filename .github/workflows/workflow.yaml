@@ -74,6 +74,11 @@ jobs:
         with:
           asset_paths: '["imgc-rs-*-gnu-linux-x86_64.tar.gz*", "imgc-rs-*-windows.zip*"]'
 
+      - name: Cargo publish crate
+        run: cargo publish --token ${CRATES_TOKEN}
+        env:
+          CRATES_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:

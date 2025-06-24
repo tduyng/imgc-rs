@@ -3,7 +3,7 @@ name = "imgc"
 version = "0.0.0-git"
 edition = "2024"
 authors = ["Duy NG <hi@tduyng.com>", "Daniel Gunzinger <daniel.gunzinger@posteo.de>"]
-description = "A configurable and efficient batch image converterwritten in Rust."
+description = "A configurable and efficient batch image converter written in Rust."
 license = "MIT"
 documentation = "https://docs.rs/imgc"
 homepage = "https://github.com/tduyng/imgc-rs"
@@ -19,7 +19,8 @@ include = [
     "README.md",
     "LICENSE",
     "Cargo.toml",
-    "/src/*.rs",
+    "/src/**/*.rs",
+    "build.rs"
 ]
 default-run = "imgc"
 
