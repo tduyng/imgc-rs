@@ -3,9 +3,10 @@
 Welcome to imgc!
 
 This tool is a command-line utility built with Rust,
- focusing on converting images into the WebP format.
+ focusing on converting images into other formats,
+ specifically targeting modern image standards and encoders.
 Leveraging the powerful [image crate](https://github.com/image-rs/image),
- imgc simplifies the process of batch converting images,
+ `imgc` simplifies the process of batch converting images,
  optimizing for both performance and storage efficiency.
 
 ## Key Features
@@ -13,13 +14,13 @@ Leveraging the powerful [image crate](https://github.com/image-rs/image),
 - **Efficient Conversion**: 
  Convert a variety of image formats to WebP or AVIF with lossy or lossless compression.
 - **Broad Format Support**: 
- Works with many popular image formats, including PNG and JPEG.
+ Works with many [supported image formats](https://docs.rs/image/0.25.6/image/codecs/index.html#supported-formats).
 - **Custom Output**:
  Choose where your converted images are saved.
 - **Speedy Processing**:
  Takes advantage of `rayon` for fast, parallel processing.
 - **Glob Pattern Support**: 
- Since imgc is not yet available on crates.io, you'll need to clone the repository to get started:
+ Since `imgc` is not yet available on [crates.io](https://crates.io), you'll need to clone the repository to get started:
 
 ## Getting Started
 
