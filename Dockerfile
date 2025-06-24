@@ -6,4 +6,5 @@ RUN cargo install --profile release --path .
 
 FROM alpine:latest
 COPY --from=builder /usr/local/cargo/bin/imgc /usr/local/bin/imgc
+WORKDIR /targets
 CMD ["imgc"]
