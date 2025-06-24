@@ -67,14 +67,14 @@ jobs:
           shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz.sha256"
           shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip.sha256"
 
-      - name: Upload release binaries
+      - name: Upload binaries to release
         uses: alexellis/upload-assets@0.4.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: '["imgc-rs-*-gnu-linux-x86_64.tar.gz", "imgc-rs-*-windows.zip", "imgc-rs-*-gnu-linux-x86_64.tar.gz.sha256", "imgc-rs-*-windows.zip.sha256"]'
+          asset_paths: '["imgc-rs-*-gnu-linux-x86_64.tar.gz*", "imgc-rs-*-windows.zip*"]'
 
-      - name: Log in to DockerHub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
