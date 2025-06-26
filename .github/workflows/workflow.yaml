@@ -98,3 +98,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Push README.md to Dockerhub
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ env.IMAGE_NAME }}
+          short-description: 'imgc-rs, configurable and efficient batch image converter'
+          enable-url-completion: true
