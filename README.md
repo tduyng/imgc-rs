@@ -1,8 +1,7 @@
 # Image Converter `imgc`
 
 `imgc` is a command-line utility focusing on converting images into other formats,
- specifically targeting support modern image standards and encoders.
-Leveraging the powerful [image crate](https://github.com/image-rs/image),
+ specifically focusing on support for modern image standards and encoders.
 
 `imgc` simplifies the process of batch converting images,
  optimizing for both performance and storage efficiency.
