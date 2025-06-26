@@ -10,7 +10,9 @@ use std::{
     fs,
     path::{Path, PathBuf},
 };
-use std::collections::LinkedList;
+use std::collections::{LinkedList};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use bytesize::ByteSize;
 use indicatif::{ParallelProgressIterator, ProgressStyle};
 
@@ -21,7 +23,7 @@ include!(concat!(env!("OUT_DIR"), "/versions.rs"));
 pub fn convert_images(
     pattern: &str,
     img_format: &ImageFormat,
-    output: &Option<String>,
+    output_directory: &Option<String>,
     overwrite_existing: &Option<bool>,
     option_lossless: &Option<bool>,
     option_quality: &Option<f32>,
@@ -29,6 +31,11 @@ pub fn convert_images(
 ) -> Result<(), Error> {
     let mut paths: Vec<PathBuf> = glob::glob(pattern)?
         .filter_map(|entry| entry.ok())
+        // disable reading avif (FIXME: re-enable with reliable build+integration for reader)
+        .filter(|path| 
+            (is_supported(path, img_format) && is_supported(path, &ImageFormat::Avif))
+                || ImageFormat::from(path.as_path()) != ImageFormat::Unknown
+        )
         .collect();
     paths.sort_by(|a,b| a.file_name().cmp(&b.file_name()));
 
@@ -39,15 +46,50 @@ pub fn convert_images(
         _ => "unknown encoder".parse().unwrap(),
     };
 
+    // TODO: rework file amount statistics, move filter upwards, add early exit if all inputs are missing
+
+    if output_directory.is_some() {
+        let output_directory = Path::new(output_directory.as_ref().unwrap());
+        if ! fs::exists(output_directory)? {
+            // is it possible to warn in docker if the target output directory is not host mounted?
+            println!("Creating output directory \"{:?}\"", output_directory);
+            fs::create_dir_all(output_directory).unwrap_or_else(|err| {
+                eprintln!("Error creating the output directory: {err}");
+                std::process::exit(1);
+            });
+        }
+    }
+    // IDEA: create output filename from configurable regex
+
     println!("Converting {} files...", paths.len());
     println!("{}", encoder_data);
+
+    let global_stop = Arc::new(AtomicBool::new(false));
+    let stop_signal = global_stop.clone();
+    let mut ctrlc_counter = 0;
+    ctrlc::set_handler(move || {
+        if !global_stop.load(std::sync::atomic::Ordering::Relaxed) {
+            println!("received Ctrl+C, stopping further queue processing!");
+            global_stop.store(true, std::sync::atomic::Ordering::Relaxed);
+        } else {
+            println!("an encoding task is still active!{} processing will end afterwards.", str::repeat("!", ctrlc_counter));
+        }
+        ctrlc_counter += 1;
+    }).expect("Error setting Ctrl-C handler");
 
     let style = ProgressStyle::with_template("[{elapsed_precise}/~{duration_precise} ({eta_precise} rem.)] {wide_bar:.cyan/blue} {pos:>7}/{len:7}").unwrap();
     let _results: LinkedList<(isize, usize, usize)> = paths.clone()
         .into_par_iter()
         .progress_with_style(style)
-        .filter(|path| is_supported(path, img_format))
-        .map(|path| convert_image(&*path, img_format, output, overwrite_existing, option_lossless, option_quality, option_speed)
+        .map(|path|
+            if stop_signal.load(std::sync::atomic::Ordering::Relaxed) {
+                return (-1, 0, 0);
+            } else {
+                 convert_image(
+                     &*path, img_format, output_directory, overwrite_existing,
+                     option_lossless, option_quality, option_speed
+                 )
+            }
             .map_err(|err| eprintln!("Failed to convert image {:?} : {:?}", path, err)).unwrap_or_else(|_| (-2, 0, 0))
         )
         .collect();
@@ -98,9 +140,9 @@ fn convert_image(
         // file exists, and we do not have the overwrite flag on? => return early
         return Ok((-1, input_size as usize, fs::metadata(&output_path)?.len() as usize))
     }
+    // TODO: make sure to not accidentally overwrite the file (if we have webp as input and output etc.)
 
-    let image_reader = ImageReader::open(input_path)?;
-    let image = image_reader.decode()?;
+    let image = ImageReader::open(input_path)?.decode()?;
 
     let encode_lossless = option_lossless.unwrap_or(false);
     let encode_quality: f32 = option_quality.unwrap_or(90.);

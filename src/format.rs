@@ -63,7 +63,7 @@ pub enum ImageFormat {
     Webp,
 
     /// Represents an image format not explicitly listed here.
-    Other(String),
+    Unknown,
 }
 
 impl ImageFormat {
@@ -85,7 +85,7 @@ impl ImageFormat {
             ImageFormat::Tga => "tga",
             ImageFormat::Tiff => "tiff",
             ImageFormat::Webp => "webp",
-            ImageFormat::Other(ext) => ext,
+            ImageFormat::Unknown => "?",
         }
     }
 
@@ -107,7 +107,7 @@ impl ImageFormat {
             "tga" => ImageFormat::Tga,
             "tiff" | "tif" => ImageFormat::Tiff,
             "webp" => ImageFormat::Webp,
-            other => ImageFormat::Other(other.to_string()),
+            _ => ImageFormat::Unknown,
         }
     }
 }
@@ -116,7 +116,7 @@ impl From<&Path> for ImageFormat {
     fn from(path: &Path) -> Self {
         match path.extension().and_then(|ext| ext.to_str()) {
             Some(ext) => ImageFormat::from_extension(ext),
-            None => ImageFormat::Other("unknown".to_string()),
+            None => ImageFormat::Unknown,
         }
     }
 }
