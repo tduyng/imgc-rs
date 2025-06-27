@@ -36,6 +36,7 @@ ravif = "0.12.0"
 rgb = "0.8.50"
 indicatif = {version = "0.17.11", features = ["rayon"]}
 bytesize = "2.0.1"
+mozjpeg = "0.10.13"
 
 [build-dependencies]
 cargo_metadata = "0.20.0"
@@ -46,7 +47,7 @@ debug = 1
 
 [profile.release]
 opt-level = 3
-panic = "abort"
+panic = "unwind" #"abort"
 debug = false
 debug-assertions = false
 overflow-checks = false

@@ -61,6 +61,8 @@ pub enum ImageFormat {
 
     /// WebP, an image format that provides lossless and lossy compression for images on the web.
     Webp,
+    /// WebP, but encoded with the lossless VP8L encoder from image crate
+    WebpImage,
 
     /// Represents an image format not explicitly listed here.
     Unknown,
@@ -85,6 +87,7 @@ impl ImageFormat {
             ImageFormat::Tga => "tga",
             ImageFormat::Tiff => "tiff",
             ImageFormat::Webp => "webp",
+            ImageFormat::WebpImage => "webp",
             ImageFormat::Unknown => "?",
         }
     }
