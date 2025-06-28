@@ -47,32 +47,34 @@ jobs:
           grep -i -C 5 "imgc" Cargo.lock
 
       - name: Install Linux and Windows Cross Compilers
-        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32 nasm
+        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32 nasm upx-ucl
         # nasm is needed for rav1e
+        # upx is used to pack the generated binaries to minimize size
 
       - name: Install rustup targets
         run: rustup target add x86_64-unknown-linux-musl x86_64-pc-windows-gnu
 
-      - name: Build the executable
+      - name: Build the executables
         run: cargo build --release --target x86_64-unknown-linux-musl --target x86_64-pc-windows-gnu
 
-      - name: Tar x86_64 binary
-        run: tar -czvf "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" -C target/x86_64-unknown-linux-musl/release imgc
-
-      - name: Zip windows binary
-        run: zip -j "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip" target/x86_64-pc-windows-gnu/release/imgc.exe
+      - name: Pack the executables
+        run: |
+          upx --best --ultra-brute target/x86_64-unknown-linux-musl/release/imgc target/x86_64-pc-windows-gnu/release/imgc.exe
+          mkdir -p current_release
+          mv target/x86_64-unknown-linux-musl/release/imgc "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}"
+          mv target/x86_64-pc-windows-gnu/release/imgc.exe "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe"
 
       - name: Generate SHA256 checksums
         run: |
-          shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-gnu-linux-x86_64.tar.gz.sha256"
-          shasum -a 256 "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip" > "imgc-rs-${DOCKER_METADATA_OUTPUT_VERSION#v}-windows.zip.sha256"
+          shasum -a 256 "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}" > "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.sha256"
+          shasum -a 256 "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe" > "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe.sha256"
 
       - name: Upload binaries to release
         uses: alexellis/upload-assets@0.4.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: '["imgc-rs-*-gnu-linux-x86_64.tar.gz*", "imgc-rs-*-windows.zip*"]'
+          asset_paths: '["current_release/*"]'
 
       - name: Cargo publish crate
         run: cargo publish --allow-dirty

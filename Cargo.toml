@@ -46,15 +46,15 @@ opt-level = 1
 debug = 1
 
 [profile.release]
-opt-level = 3
-panic = "unwind" #"abort"
+opt-level = 3 # "z" can significantly reduce binary size
+panic = "abort" # "unwind" for debugging
 debug = false
 debug-assertions = false
 overflow-checks = false
 incremental = false
 lto = true
 strip = true
-codegen-units = 16
+codegen-units = 1 # 16 for debugging/fast build time; 1 for release builds (lowers binary size)
 rpath = false
 
 [profile.dev.package."*"]
