@@ -26,7 +26,7 @@ Compression ratio: 54.95%
 ## Key Features 🧰
 
 - **Broad Format Support**: 
- Works with many [supported image formats](#supported-formats-).
+ Works with many [supported image formats](#supported-formats).
 - **Speedy Processing**:
   Written in Rust to keep overhead to a minimum, we also take advantage of `rayon` for parallel processing.
 - **Input selection using Glob Patterns**:
@@ -36,9 +36,9 @@ Compression ratio: 54.95%
 
 ---
 
-## Supported formats 🖼️
+## Supported formats
 
-### Input formats 📥
+### Input formats 🖼️
 
 To keep it simple: `JPEG`, `PNG`, `GIF`, `WebP`, `BMP`, `DDS`, `Farbfeld`, `HDR`, `ICO`, `EXR`, `PNM`, `QOI`, `TGA`, `TIFF`
 
