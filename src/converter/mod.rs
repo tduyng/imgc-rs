@@ -2,7 +2,7 @@
 pub mod webp;
 
 use crate::{converter::webp::encode_webp, format::ImageFormat, utils::is_supported, Error};
-use image::io::Reader;
+use image::ImageReader;
 use rayon::prelude::*;
 use std::{
     fs,
@@ -33,7 +33,7 @@ fn convert_image(
     output_dir: &Option<String>,
     img_format: &ImageFormat,
 ) -> Result<(), Error> {
-    let image_reader = Reader::open(input_path)?;
+    let image_reader = ImageReader::open(input_path)?;
     let image = image_reader.decode()?;
 
     let image_data = match img_format {

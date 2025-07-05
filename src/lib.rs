@@ -86,8 +86,8 @@ imgc clean "examples/**/*.webp"
 For detailed command usage, `--help` or `-h` will guide you through:
 
 ```bash
-❯ imgc -h              
-A CLI for converting images to the WebP format writtent in Rust
+❯ imgc -h
+A CLI for converting images to the WebP format written in Rust
 
 Usage: imgc <COMMAND>
 
@@ -104,7 +104,7 @@ Options:
 For the `webp` command:
 
 ```bash
-❯ imgc webp -h                                     
+❯ imgc webp -h
 Convert images to webp format
 
 Usage: imgc webp [OPTIONS] <PATTERN>
@@ -120,7 +120,7 @@ Options:
 For the `clean` command:
 
 ```bash
-❯ imgc clean -h                  
+❯ imgc clean -h
 Remove files matching a glob pattern
 
 Usage: imgc clean <PATTERN>
@@ -167,7 +167,7 @@ Example of clean command:
 
 ## License
 
-Choose between [MIT License](./LICENCE_MIT) or [Apache License](./LICENSE_APACHE) as per your preference.
+Choose between [MIT License](./LICENSE_MIT) or [Apache License](./LICENSE_APACHE) as per your preference.
 */
 
 #![deny(missing_docs)]
