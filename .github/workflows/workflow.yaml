@@ -1,0 +1,111 @@
+name: workflow.yaml
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/imgc-rs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract repository/service name
+        id: extract-name
+        run: echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Set Cargo.toml version
+        shell: bash
+        run: |
+          sed -i "s/0\\.0\\.0-git/${DOCKER_METADATA_OUTPUT_VERSION#v}/" Cargo.toml
+          head -n 5 Cargo.toml
+          sed -i "s/0\\.0\\.0-git/${DOCKER_METADATA_OUTPUT_VERSION#v}/" Cargo.lock
+          grep -i -C 5 "imgc" Cargo.lock
+
+      - name: Install Linux and Windows Cross Compilers
+        run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32 nasm upx-ucl
+        # nasm is needed for rav1e
+        # upx is used to pack the generated binaries to minimize size
+
+      - name: Install rustup targets
+        run: rustup target add x86_64-unknown-linux-musl x86_64-pc-windows-gnu
+
+      - name: Build the executables
+        run: cargo build --release --target x86_64-unknown-linux-musl --target x86_64-pc-windows-gnu
+
+      - name: Pack the executables
+        run: |
+          upx --best --ultra-brute target/x86_64-unknown-linux-musl/release/imgc target/x86_64-pc-windows-gnu/release/imgc.exe
+          mkdir -p current_release
+          mv target/x86_64-unknown-linux-musl/release/imgc "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}"
+          mv target/x86_64-pc-windows-gnu/release/imgc.exe "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe"
+
+      - name: Generate SHA256 checksums
+        run: |
+          shasum -a 256 "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}" > "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.sha256"
+          shasum -a 256 "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe" > "current_release/imgc-${DOCKER_METADATA_OUTPUT_VERSION#v}.exe.sha256"
+
+      - name: Upload binaries to release
+        uses: alexellis/upload-assets@0.4.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: '["current_release/*"]'
+
+      - name: Cargo publish crate
+        run: cargo publish --allow-dirty
+        # --allow-dirty is needed as we modify Cargo.toml and Cargo.lock with our freshly generated version number
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          # https://github.com/docker/build-push-action#:~:text=any%20file%20mutation%20in%20the%20steps%20that%20precede%20the%20build%20step%20will%20be%20ignored
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Push README.md to Dockerhub
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.IMAGE_NAME }}
+          short-description: 'imgc-rs, configurable and efficient batch image converter'
+          enable-url-completion: true

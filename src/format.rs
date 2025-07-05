@@ -61,9 +61,11 @@ pub enum ImageFormat {
 
     /// WebP, an image format that provides lossless and lossy compression for images on the web.
     Webp,
+    /// WebP, but encoded with the lossless VP8L encoder from image crate
+    WebpImage,
 
     /// Represents an image format not explicitly listed here.
-    Other(String),
+    Unknown,
 }
 
 impl ImageFormat {
@@ -85,7 +87,8 @@ impl ImageFormat {
             ImageFormat::Tga => "tga",
             ImageFormat::Tiff => "tiff",
             ImageFormat::Webp => "webp",
-            ImageFormat::Other(ext) => ext,
+            ImageFormat::WebpImage => "webp",
+            ImageFormat::Unknown => "?",
         }
     }
 
@@ -107,7 +110,7 @@ impl ImageFormat {
             "tga" => ImageFormat::Tga,
             "tiff" | "tif" => ImageFormat::Tiff,
             "webp" => ImageFormat::Webp,
-            other => ImageFormat::Other(other.to_string()),
+            _ => ImageFormat::Unknown,
         }
     }
 }
@@ -116,7 +119,7 @@ impl From<&Path> for ImageFormat {
     fn from(path: &Path) -> Self {
         match path.extension().and_then(|ext| ext.to_str()) {
             Some(ext) => ImageFormat::from_extension(ext),
-            None => ImageFormat::Other("unknown".to_string()),
+            None => ImageFormat::Unknown,
         }
     }
 }

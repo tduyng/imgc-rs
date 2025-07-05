@@ -1,0 +1,16 @@
+FROM rust:1-slim-bookworm AS builder
+WORKDIR /usr/src/myapp
+COPY . .
+RUN apt-get update && apt-get install -y nasm
+RUN cargo install --profile release --path .
+
+FROM alpine:latest AS packer
+COPY --from=builder /usr/local/cargo/bin/imgc /usr/local/bin/imgc
+RUN apk add --no-cache upx && \
+    upx --best --ultra-brute /usr/local/bin/imgc
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
+COPY --from=packer /usr/local/bin/imgc /usr/local/bin/imgc
+WORKDIR /targets
+CMD ["imgc"]
