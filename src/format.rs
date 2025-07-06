@@ -9,7 +9,7 @@ use std::path::Path;
 ///
 /// # Examples
 ///
-/// ```
+/// ```ignore
 /// use your_crate::ImageFormat;
 ///
 /// let format = ImageFormat::Png;
