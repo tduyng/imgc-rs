@@ -33,7 +33,7 @@ image = {version = "0.25.6"}
 rayon = "1.10.0"
 webp = "0.3"
 ravif = "0.12.0"
-rgb = "0.8.50"
+rgb = "0.8.51"
 indicatif = {version = "0.17.12", features = ["rayon"]}
 bytesize = "2.0.1"
 mozjpeg = "0.10.13"
