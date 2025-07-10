@@ -25,7 +25,7 @@ include = [
 default-run = "imgc"
 
 [dependencies]
-clap = { version = "4.5.40", features = ["derive"] }
+clap = { version = "4.5.41", features = ["derive"] }
 glob = "0.3.2"
 ctrlc = "3.4.7"
 #image = {version = "0.25.6", features = ["avif-native"] } # problematic on windows
