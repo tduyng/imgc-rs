@@ -25,7 +25,7 @@ include = [
 default-run = "imgc"
 
 [dependencies]
-clap = { version = "4.5.40", features = ["derive"] }
+clap = { version = "4.5.41", features = ["derive"] }
 glob = "0.3.2"
 ctrlc = "3.4.7"
 #image = {version = "0.25.6", features = ["avif-native"] } # problematic on windows
@@ -34,12 +34,12 @@ rayon = "1.10.0"
 webp = "0.3"
 ravif = "0.12.0"
 rgb = "0.8.51"
-indicatif = {version = "0.17.12", features = ["rayon"]}
+indicatif = {version = "0.18.0", features = ["rayon"]}
 bytesize = "2.0.1"
 mozjpeg = "0.10.13"
 
 [build-dependencies]
-cargo_metadata = "0.20.0"
+cargo_metadata = "0.21.0"
 
 [profile.dev]
 opt-level = 1
