@@ -39,7 +39,7 @@ bytesize = "2.0.1"
 mozjpeg = "0.10.13"
 
 [build-dependencies]
-cargo_metadata = "0.20.0"
+cargo_metadata = "0.21.0"
 
 [profile.dev]
 opt-level = 1
